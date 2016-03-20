@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using System.Collections;
-using Scenery_Picker.TreeBrush;
 
 namespace TreeBrush
 {

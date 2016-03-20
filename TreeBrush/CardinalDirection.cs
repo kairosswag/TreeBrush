@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace Scenery_Picker.TreeBrush
+namespace TreeBrush
 {
     public class CardinalDirection
     {

@@ -35,7 +35,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
-      <HintPath>..\..\Parkitect_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>D:\Program Files\Parkitect\Parkitect_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
@@ -45,10 +45,10 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="UnityEngine">
-      <HintPath>..\..\Parkitect_Data\Managed\UnityEngine.dll</HintPath>
+      <HintPath>D:\Program Files\Parkitect\Parkitect_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>..\..\Parkitect_Data\Managed\UnityEngine.UI.dll</HintPath>
+      <HintPath>D:\Program Files\Parkitect\Parkitect_Data\Managed\UnityEngine.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
