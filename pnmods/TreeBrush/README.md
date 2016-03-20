@@ -1,3 +1,5 @@
-# Your First Mod
+# TreeBrush
 
-In this `readme` you can explain what your mod has to offer.
+Work in Progress.
+
+This mod provides a brush tool to place multiple trees (at first) to quickly create forests.
