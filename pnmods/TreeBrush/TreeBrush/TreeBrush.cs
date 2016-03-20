@@ -56,7 +56,6 @@ namespace TreeBrush
                         }
                     }
                 }
-                debug += " -- added firs\n";
                 yield return new UnityEngine.WaitForSeconds(placementDelay);
             }
         }
