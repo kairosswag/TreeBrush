@@ -8,6 +8,33 @@ namespace Scenery_Picker.TreeBrush
 {
     public class CardinalDirection
     {
+        private Direction[] currentPermutation;
+        private short step;
+
+        public CardinalDirection()
+        {
+            currentPermutation = getPermutation();
+            step = 0;
+        }
+
+        /// <summary>
+        /// Will randomly return unique directions, until all eight have been cycled through.
+        /// Will them proceed to create a new set of directions and give them out one-by-one again.
+        /// </summary>
+        public Direction next
+        {
+            get
+            {
+                if (step >= 8)
+                {
+                    currentPermutation = getPermutation();
+                    step = 0;
+                }
+                var dir = currentPermutation[step];
+                ++step;
+                return dir;
+            }
+        }
         public enum Direction
         {
             unknown = 0, north, northeast, east, southeast, south, southwest, west, northwest
@@ -23,7 +50,8 @@ namespace Scenery_Picker.TreeBrush
             {
                 if (dir == Direction.unknown) continue;
                 int counter = -1, pos = -1, roll = rand.Next(remain);
-                do {
+                do
+                {
                     ++pos;
                     if (res[pos] == Direction.unknown)
                         ++counter;

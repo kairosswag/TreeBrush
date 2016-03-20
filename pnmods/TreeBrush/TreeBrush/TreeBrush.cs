@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using System.Collections;
+using Scenery_Picker.TreeBrush;
 
 namespace TreeBrush
 {
@@ -26,18 +27,36 @@ namespace TreeBrush
             for (;;)
             {
                 debug = "";
-                for (int remaining = 0; remaining < placementAmount; ++remaining)
+                if (activated)
                 {
-                    debug += "placed fir: ";
-                    Vector3 pos;
-                    if (PlacementPosition(out pos) && activated)
+                    var directionGenerator = new CardinalDirection();
+                    var park = GameController.Instance.park;
+                    int tryNumber = 0;
+                    for (int remaining = 0; remaining < placementAmount; ++remaining)
                     {
-                        placeFir(pos);
-                        debug += remaining;
+                        Vector3 cursorPos;
+                        bool canPlace = CursorHoverPosition(out cursorPos);
+                        bool added = false;
+                        if (tryNumber == 0)
+                        {
+                            added = placeFir(cursorPos);
+                            ++tryNumber;
+                        }
+                        int maxcount = 30; //ToDo: Put some thought into this number
+                        while (!added && maxcount-- > 0)
+                        {
+                            var nextDir = directionGenerator.next;
+                            Vector2 shift = CardinalDirection.getDirectionVector(nextDir).normalized;
+                            float scale = (tryNumber / 8) + 1;
+                            shift = new Vector2(shift.x * scale, shift.y * scale);
+                            debug += "shift @" + scale + "(" + tryNumber + ") : " + shift + '\n';
+                            var newVec = park.getTerrainPointAt(new Vector3(cursorPos.x + shift.x, cursorPos.y, cursorPos.z + shift.y));
+                            added = placeFir(newVec);
+                            ++tryNumber;
+                        }
                     }
-                    debug += "x\n";
                 }
-                debug += " -- added firs";
+                debug += " -- added firs\n";
                 yield return new UnityEngine.WaitForSeconds(placementDelay);
             }
         }
@@ -82,7 +101,7 @@ namespace TreeBrush
             }
         }
 
-        private bool PlacementPosition(out Vector3 position)
+        private bool CursorHoverPosition(out Vector3 position)
         {
             RaycastHit hit = new RaycastHit();
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -91,8 +110,11 @@ namespace TreeBrush
             return tmp;
         }
 
-        private void placeFir(Vector3 position)
+        private bool placeFir(Vector3 position)
         {
+            if (!canPlaceAt(position))
+                return false;
+
             TreeEntity fir = null;
             foreach (var o in ScriptableSingleton<AssetManager>.Instance.getDecoObjects())
                 if (o.getName().StartsWith("Fir") && o is TreeEntity) fir = o as TreeEntity;
@@ -106,14 +128,16 @@ namespace TreeBrush
                 {
                     tree.Initialize();
                     tree.startAnimateSpawn(Vector3.zero);
+                    return true;
                 }
                 else
                 {
-                    debug += "cannot add fir at: " + position;
                     tree.isPreview = true;
                     tree.Kill();
+                    return false;
                 }
             }
+            return false;
         }
 
     }
