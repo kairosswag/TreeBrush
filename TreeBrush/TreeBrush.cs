@@ -4,34 +4,76 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using System.Collections;
+using Parkitect.UI;
 
 namespace TreeBrush
 {
     class TreeBrush : MonoBehaviour
     {
-        private int guest = 0;
-        private bool activated = false;
+        private bool ShallRun
+        {
+            get
+            {
+                return _shallRun && placingActivated;
+            }
+            set
+            {
+                _shallRun = value;
+            }
+        }
+        private bool _shallRun = false;
+        private volatile bool placingActivated = false;
         private List<SerializedMonoBehaviour> list = null;
         private static string buttonLabel = "Button untoggled";
         private static string debug = "no debug";
         private static float placementDelay = 1;
-        private static int placementAmount = 5;
-        void Start()
+        private static int placementAmount = 20;
+        private System.Random random = new System.Random();
+
+        void Update()
         {
-            StartCoroutine(SpawnForest());
+            if (!placingActivated) return;
+            if (Input.GetMouseButton(0))
+            {
+                if (ShallRun == false)
+                {
+                    ShallRun = true;
+                    StartCoroutine(SpawnForest());
+                }
+                ShallRun = true;
+            }
+            else
+            {
+                ShallRun = false;
+            }
+
+            if (Input.GetMouseButtonDown(0))
+            {
+                debug = "rectTransforms: \n";
+                var windows = UIWindowsController.Instance.getWindows();
+                foreach(var elem in windows)
+                {
+                    debug += elem.getName() + "\n" + elem + "\n";
+                    elem.setSubtitle("dumdidum");
+                }
+               
+            }
         }
 
         private IEnumerator SpawnForest()
         {
-            for (;;)
+            debug += "spawning: placing|shallrun " + placingActivated + "|" + ShallRun + "\n";
+            while (placingActivated && ShallRun)
             {
                 debug = "";
-                if (activated)
+                if (placingActivated && ShallRun)
                 {
                     var directionGenerator = new CardinalDirection();
                     var park = GameController.Instance.park;
                     int tryNumber = 0;
-                    for (int remaining = 0; remaining < placementAmount; ++remaining)
+                    Vector3 lastPos;
+                    CursorHoverPosition(out lastPos);
+                    for (int remaining = 0; remaining < placementAmount && ShallRun; ++remaining)
                     {
                         Vector3 cursorPos;
                         bool canPlace = CursorHoverPosition(out cursorPos);
@@ -46,17 +88,29 @@ namespace TreeBrush
                         {
                             var nextDir = directionGenerator.next;
                             Vector2 shift = CardinalDirection.getDirectionVector(nextDir).normalized;
+                            shift = rotateVector(shift);
                             float scale = (tryNumber / 8) + 1;
+                            if ((lastPos - cursorPos).magnitude > scale)
+                                scale = 1;
                             shift = new Vector2(shift.x * scale, shift.y * scale);
-                            debug += "shift @" + scale + "(" + tryNumber + ") : " + shift + '\n';
                             var newVec = park.getTerrainPointAt(new Vector3(cursorPos.x + shift.x, cursorPos.y, cursorPos.z + shift.y));
                             added = placeFir(newVec);
                             ++tryNumber;
+                            yield return new UnityEngine.WaitForSeconds(placementDelay / placementAmount);
                         }
                     }
                 }
-                yield return new UnityEngine.WaitForSeconds(placementDelay);
+                yield return new UnityEngine.WaitForSeconds(0.1f);
             }
+        }
+
+        private Vector2 rotateVector(Vector2 org)
+        {
+            double degrees = random.NextDouble() * (Math.PI / 4);
+            Vector2 vec = new Vector2();
+            vec.x = Convert.ToSingle(org.x * Math.Cos(degrees) - org.y * Math.Sin(degrees));
+            vec.y = Convert.ToSingle(org.x * Math.Sin(degrees) + org.y * Math.Cos(degrees));
+            return vec;
         }
 
         private bool canPlaceAtCursor(out Vector3 cursorPos)
@@ -85,12 +139,12 @@ namespace TreeBrush
 
             if (GUI.Button(new Rect(10, 10, 300, 20), buttonLabel))
             {
-                activated = !activated;
-                buttonLabel = "Button" + ((activated) ? " toggled" : " untoggled");
+                placingActivated = !placingActivated;
+                buttonLabel = "Button" + ((placingActivated) ? " toggled" : " untoggled");
                 list = GameController.Instance.getSerializedObjects();
                 //GameController.Instance.park.GetComponents
             }
-            if (activated)
+            if (placingActivated)
             {
                 string compString = "Info@: \n";
 
@@ -115,7 +169,7 @@ namespace TreeBrush
 
             TreeEntity fir = null;
             foreach (var o in ScriptableSingleton<AssetManager>.Instance.getDecoObjects())
-                if (o.getName().StartsWith("Fir") && o is TreeEntity) fir = o as TreeEntity;
+                if (o.getName().StartsWith("Pop") && o is TreeEntity) fir = o as TreeEntity;
 
             if (fir != null)
             {

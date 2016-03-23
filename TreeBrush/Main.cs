@@ -9,7 +9,7 @@ namespace TreeBrush
 
         public void onEnabled()
         {
-            _go = new GameObject();
+            _go = new GameObject("TreeBrush");
             _go.AddComponent<TreeBrush>();
         }
 
