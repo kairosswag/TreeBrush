@@ -8,7 +8,7 @@ using Parkitect.UI;
 
 namespace TreeBrush
 {
-    class TreeBrush : MonoBehaviour
+    class TreeBrush
     {
         private bool ShallRun
         {
@@ -25,7 +25,7 @@ namespace TreeBrush
         private volatile bool placingActivated = false;
         private List<SerializedMonoBehaviour> list = null;
         private static string buttonLabel = "Button untoggled";
-        private static string debug = "no debug";
+        public string debug = "no debug";
         private static float placementDelay = 1;
         private static int placementAmount = 20;
         private System.Random random = new System.Random();
@@ -38,7 +38,7 @@ namespace TreeBrush
                 if (ShallRun == false)
                 {
                     ShallRun = true;
-                    StartCoroutine(SpawnForest());
+                    //StartCoroutine(SpawnForest());
                 }
                 ShallRun = true;
             }
@@ -49,17 +49,14 @@ namespace TreeBrush
 
             if (Input.GetMouseButtonDown(0))
             {
-                debug = "rectTransforms: \n";
-                var windows = UIWindowsController.Instance.getWindows();
-                foreach(var elem in windows)
-                {
-                    debug += elem.getName() + "\n" + elem + "\n";
-                    elem.setSubtitle("dumdidum");
-                }
-               
+                _callOnClick();               
             }
         }
 
+        private void _callOnClick()
+        {
+           
+        }
         private IEnumerator SpawnForest()
         {
             debug += "spawning: placing|shallrun " + placingActivated + "|" + ShallRun + "\n";
@@ -170,7 +167,7 @@ namespace TreeBrush
             TreeEntity fir = null;
             foreach (var o in ScriptableSingleton<AssetManager>.Instance.getDecoObjects())
                 if (o.getName().StartsWith("Pop") && o is TreeEntity) fir = o as TreeEntity;
-
+            /*
             if (fir != null)
             {
                 var tree = Instantiate(fir);
@@ -188,7 +185,7 @@ namespace TreeBrush
                     tree.Kill();
                     return false;
                 }
-            }
+            }*/
             return false;
         }
 

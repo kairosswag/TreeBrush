@@ -10,7 +10,7 @@ namespace TreeBrush
         public void onEnabled()
         {
             _go = new GameObject("TreeBrush");
-            _go.AddComponent<TreeBrush>();
+            _go.AddComponent<TreeBrushUIBuilder>();
         }
 
         public void onDisabled()
